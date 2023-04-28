@@ -1,0 +1,72 @@
+import random
+import tkinter as tk
+from tkinter import messagebox
+
+class RandomNumberGenerator:
+    def __init__(self, master):
+        self.master = master
+        master.title("Генератор случайных чисел")
+        
+        self.label = tk.Label(master, text="Нажмите на кнопку, чтобы сгенерировать случайное число!")
+        self.label.pack()
+        
+        self.result_label = tk.Label(master, text="")
+        self.result_label.pack()
+        
+        # Создаем список для хранения вариантов
+        self.variants_frame = tk.Frame(master)
+        self.variants_frame.pack(fill=tk.X)
+        self.variants = []
+        self.variants_label = tk.Label(self.variants_frame, text="Введите свои варианты:")
+        self.variants_label.pack(side=tk.TOP)
+        
+        # Создаем 5 полей для ввода вариантов
+        for i in range(5):
+            variant_entry = tk.Entry(self.variants_frame)
+            variant_entry.pack(side=tk.TOP)
+            self.variants.append(variant_entry)
+            
+        # Создаем кнопку для удаления варианта по умолчанию
+        self.remove_default_button = tk.Button(master, text="Удалить вариант", command=self.remove_default)
+        self.remove_default_button.pack(side=tk.BOTTOM)
+        
+        # Создаем кнопку для добавления варианта
+        self.add_variant_button = tk.Button(master, text="Добавить вариант", command=self.add_variant)
+        self.add_variant_button.pack(side=tk.BOTTOM)
+
+        # Создаем кнопку для генерации случайного числа и делаем текст жирным
+        self.generate_button = tk.Button(master, text="Выбрать рандомно", font=('bold'), command=self.generate_number)
+        self.generate_button.pack(side=tk.BOTTOM)
+
+    def generate_number(self):
+        # Если есть введенные варианты, то генерируем число из них
+        if self.variants:
+            valid_variants = [variant for variant in self.variants if variant.get()]
+            if len(valid_variants) < 2:
+                messagebox.showerror("Ошибка", "Извините, но введено слишком мало вариантов.")
+                return
+            rand_num = random.choice(valid_variants).get()
+        else:
+            rand_num = None
+        self.result_label.config(text="Сгенерированное число: {}".format(rand_num))
+        
+    def remove_default(self):
+        # Удаляем вариант по умолчанию (если есть)
+        if len(self.variants) > 2:
+            self.variants.pop(0).destroy()
+        else:
+            messagebox.showerror("Ошибка", "Должно быть не менее двух вариантов!")
+            
+    def add_variant(self):
+        # Проверяем, что не достигли максимального количества вариантов
+        if len(self.variants) >= 10:
+            return
+        
+        variant_entry = tk.Entry(self.variants_frame)
+        variant_entry.pack(side=tk.TOP)
+        self.variants.append(variant_entry)
+
+
+root = tk.Tk()
+app = RandomNumberGenerator(root)
+root.mainloop()
