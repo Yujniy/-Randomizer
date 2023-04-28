@@ -1,0 +1,72 @@
+import random
+import tkinter as tk
+from tkinter import messagebox
+
+class RandomNumberGenerator:
+    def __init__(self, master):
+        self.master = master
+        master.title("Random Number Generator")
+        
+        self.label = tk.Label(master, text="Press the button to generate a random number!")
+        self.label.pack()
+        
+        self.result_label = tk.Label(master, text="")
+        self.result_label.pack()
+        
+        # Create a list to store the options
+        self.variants_frame = tk.Frame(master)
+        self.variants_frame.pack(fill=tk.X)
+        self.variants = []
+        self.variants_label = tk.Label(self.variants_frame, text="Enter your options:")
+        self.variants_label.pack(side=tk.TOP)
+        
+        # Create 5 fields for entering options
+        for i in range(5):
+            variant_entry = tk.Entry(self.variants_frame)
+            variant_entry.pack(side=tk.TOP)
+            self.variants.append(variant_entry)
+            
+        # Create a button to remove the default option
+        self.remove_default_button = tk.Button(master, text="Remove option", command=self.remove_default)
+        self.remove_default_button.pack(side=tk.BOTTOM)
+        
+        # Create a button to add an option
+        self.add_variant_button = tk.Button(master, text="Add option", command=self.add_variant)
+        self.add_variant_button.pack(side=tk.BOTTOM)
+
+        # Create a button to generate a random number and make the text bold
+        self.generate_button = tk.Button(master, text="Generate Random", font=('bold'), command=self.generate_number)
+        self.generate_button.pack(side=tk.BOTTOM)
+
+    def generate_number(self):
+        # If there are entered options, generate a number from them
+        if self.variants:
+            valid_variants = [variant for variant in self.variants if variant.get()]
+            if len(valid_variants) < 2:
+                messagebox.showerror("Error", "Sorry, but there are not enough options entered.")
+                return
+            rand_num = random.choice(valid_variants).get()
+        else:
+            rand_num = None
+        self.result_label.config(text="Generated number: {}".format(rand_num))
+        
+    def remove_default(self):
+        # Remove the default option (if any)
+        if len(self.variants) > 2:
+            self.variants.pop(0).destroy()
+        else:
+            messagebox.showerror("Error", "There must be at least two options!")
+            
+    def add_variant(self):
+        # Check that the maximum number of options has not been reached
+        if len(self.variants) >= 10:
+            return
+        
+        variant_entry = tk.Entry(self.variants_frame)
+        variant_entry.pack(side=tk.TOP)
+        self.variants.append(variant_entry)
+
+
+root = tk.Tk()
+app = RandomNumberGenerator(root)
+root.mainloop()
